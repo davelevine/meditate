@@ -15,11 +15,18 @@ import {
   Timestamp,
   where,
 } from "firebase/firestore"
-import { PokoySession, DayData } from "shared/types"
+import {
+  PokoySession,
+  DayData,
+  ServerDayData,
+  PseudoDayData,
+} from "shared/types"
 
-const INIT_DAY_DATA: DayData = {
-  // FIXME: hardcode!
-  timestamp: Timestamp.fromDate(new Date(new Date().toDateString())),
+// eslint-disable
+const timestamp = Timestamp.fromDate(new Date(new Date().toDateString()))
+const INIT_DAY_DATA: PseudoDayData = {
+  // NOTE: hardcode!
+  timestamp,
   count: 0,
   totalDuration: 0,
   meditations: [],
@@ -41,7 +48,7 @@ export const migratePokoyToDay = async (
       const userId: string =
         typeof pokoyData.user === "string"
           ? (pokoyData.user as string).replace("users/", "")
-          : pokoyData.user?.id || "user-id-not-found" // FIXME: check and replace hardcode
+          : pokoyData.user?.id || "user-id-not-found" // NOTE: check and replace hardcode
 
       const daysColRef = collection(firestore, "days")
       const dayDateString = new Date(pokoyData.timestamp).toDateString()
@@ -57,12 +64,12 @@ export const migratePokoyToDay = async (
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       if (daysQuerySnapshot.docs.length > 0) {
-        console.log("write day to EXISTED document")
+        console.info("write day to EXISTED document")
         const dayDocRef = daysQuerySnapshot.docs[0].ref
         const daySnapshot = await getDoc(dayDocRef)
         const dayData = daySnapshot.data()
 
-        const newDayData: DayData = {
+        const newDayData: PseudoDayData = {
           timestamp: dayTimestamp,
           count: dayData?.count + 1,
           totalDuration: dayData?.totalDuration + pokoyData.duration,
@@ -70,22 +77,20 @@ export const migratePokoyToDay = async (
           userId,
         }
 
-        // console.log("🚀 ~ newDayData.count", newDayData.count);
-
         await setDoc(dayDocRef, newDayData)
           .then((res) => {
-            console.log("success ", index)
+            console.info("success ", index)
           })
-          .catch((e) => console.log("⛔️", e))
+          .catch((e) => console.error("⛔️", e))
         await deleteDoc(pokoySnapshot.ref)
 
         // NOTE: WRITE NEW DAY
       } else if (daysQuerySnapshot.docs.length === 0) {
-        console.log("write day to NEW document")
+        console.info("write day to NEW document")
         const newDayRef = doc(daysColRef)
         const dayData = INIT_DAY_DATA
 
-        const newDayData: DayData = {
+        const newDayData: PseudoDayData = {
           timestamp: dayTimestamp,
           count: dayData.count + 1,
           totalDuration: dayData.totalDuration + pokoyData.duration,
@@ -95,9 +100,9 @@ export const migratePokoyToDay = async (
 
         await setDoc(newDayRef, newDayData)
           .then(() => {
-            console.log("success ", index)
+            console.info("success ", index)
           })
-          .catch((e) => console.log("⛔️", e))
+          .catch((e) => console.error("⛔️", e))
         await deleteDoc(pokoySnapshot.ref)
       }
     },
@@ -112,7 +117,7 @@ export const migratePokoysToDays = async () => {
   const pokoysColRef = collection(firestore, "pokoys")
   const q = query(pokoysColRef, orderBy("timestamp", "desc"))
   const querySnapshot = await getDocs(q)
-  console.log("осталось Покоев", querySnapshot.size)
+  console.info("осталось Покоев", querySnapshot.size)
 
   const pokoysDocs = querySnapshot.docs.slice(0, 100)
   pokoysDocs.forEach((snapshot, i) => {

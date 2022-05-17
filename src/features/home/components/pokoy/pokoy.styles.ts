@@ -38,7 +38,7 @@ export const TopTextWrapper = styled.p`
   }
 `
 
-export const BottomTextWrapper = styled.p`
+export const BottomTextWrapper = styled.div`
   grid-area: tips;
   margin: 0;
 

@@ -15,8 +15,8 @@ export const TOTAL_CHART_CONFIG: AxisOptions<PokoyChartData> = {
   scaleType: "linear",
   tickCount: 3,
   position: "right",
-  showGrid: false,
   elementType: "area",
+  showGrid: false,
   getValue: (datum) => datum.secondary,
   formatters: {
     tooltip: (value: number) => `${value} hours`,
@@ -29,8 +29,8 @@ export const DAY_MEDITATIONS_CHART_CONFIG: AxisOptions<PokoyChartData> = {
   scaleType: "linear",
   position: "left",
   elementType: "bar",
-  getValue: (datum: PokoyChartData) => datum.secondary,
   id: "2",
+  getValue: (datum: PokoyChartData) => datum.secondary,
   formatters: {
     tooltip: (value: number) => `${value} minutes`,
     scale: (value: number) => `${value}m`,

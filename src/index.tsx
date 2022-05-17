@@ -7,13 +7,17 @@ import { showAppVersion } from "shared/utils/show-app-version"
 import { onServiceWorkerUpdate } from "@3m1/service-worker-updater"
 import { AppRouter } from "app-router"
 import { BrowserRouter } from "react-router-dom"
+import { store } from "./store"
+import { Provider } from "react-redux"
 
 const rootElement = document.getElementById("root")
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <AppRouter />
-    </BrowserRouter>
+    <Provider store={store}>
+      <BrowserRouter>
+        <AppRouter />
+      </BrowserRouter>
+    </Provider>
   </React.StrictMode>,
   rootElement
 )

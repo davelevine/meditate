@@ -10,14 +10,14 @@ import { firestore } from "../../firebase-init"
 import { TimerButton } from "../timer-button/timer-button.component"
 import { Countdown } from "../countdown/countdown.component"
 import { Tips } from "../tips"
-import {
-  sendSessionFromLocalStore,
-  sendSessionFromSeconds,
-} from "./writeSessionToServer"
+import { sendSessionFromLocalStore } from "./writeSessionToServer"
 import { PokoySession, RequestStatus } from "shared/types"
 import { BottomTextWrapper, TopTextWrapper, Wrapper } from "./pokoy.styles"
 import { Sound } from "features/home/components/sound.component"
 import { FibSpiral } from "../fib-spiral/fib-spiral.component"
+import { useDispatch } from "react-redux"
+import { setMeditationThunk } from "features/pokoyThunks"
+import { AppDispatch } from "store"
 
 interface Props {
   user: User
@@ -33,6 +33,7 @@ export const Pokoy: React.FC<Props> = ({ user, stillLoading }) => {
     RequestStatus.NONE
   )
   useNoSleep(true)
+  const dispatch: AppDispatch = useDispatch()
   const minutes = Math.floor(timerDiff / SECS_IN_MIN)
 
   const finishTimer = useCallback(
@@ -51,16 +52,17 @@ export const Pokoy: React.FC<Props> = ({ user, stillLoading }) => {
 
       try {
         setRequestStatus(RequestStatus.REQUEST)
-        // NOTE: line below for developing
-        // await sendSessionFromSeconds(firestore, user, 61)
-        await sendSessionFromSeconds(firestore, user, timerDiff)
+        // NOTE: line below for fast debugging
+        // dispatch(setMeditationThunk({ user, seconds: 61 }))
+        dispatch(setMeditationThunk({ user, seconds: timerDiff }))
+
         setRequestStatus(RequestStatus.SUCCESS)
       } catch (e) {
         setRequestStatus(RequestStatus.FAILURE)
         console.error(e)
       }
     },
-    [currentTimerId, user]
+    [currentTimerId, dispatch, user]
   )
 
   const handleTimer = useCallback(

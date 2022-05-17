@@ -34,7 +34,7 @@ export const migrateUserToStats = async (
   index: number
 ) => {
   const timeout = index * 1000
-  console.log("цикл")
+  console.info("цикл")
 
   setTimeout(
     // eslint-disable-next-line max-statements
@@ -52,9 +52,9 @@ export const migrateUserToStats = async (
 
       await setDoc(newUserStatsRef, newUserStatsData)
         .then(() => {
-          console.log("success ", index)
+          console.info("success ", index)
         })
-        .catch((e) => console.log("⛔️", e))
+        .catch((e) => console.error("⛔️", e))
       await deleteDoc(userSnapshot.ref)
     },
     timeout
@@ -65,7 +65,7 @@ export const migrateUsersToStats = async () => {
   const usersColRef = collection(firestore, "users")
   const q = query(usersColRef)
   const querySnapshot = await getDocs(q)
-  console.log("осталось юзеров", querySnapshot.size)
+  console.info("осталось юзеров", querySnapshot.size)
 
   const pokoysDocs = querySnapshot.docs
   pokoysDocs.forEach((snapshot, i) => {

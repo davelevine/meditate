@@ -44,7 +44,7 @@ export const SignIn = () => {
         Sign in anonymously
         <Info>
           <StyledTooltip
-            wrap
+            wrapContent
             content="⚠️ Anonymous users can use timer, but do not have statistics."
           >
             ?

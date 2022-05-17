@@ -54,7 +54,7 @@ export const Countdown: React.FC<Props> = ({ seconds }) => {
 
   return (
     <StyledTooltip
-      wrap
+      wrapContent
       position="bottom"
       content={"Time left until the next stage"}
     >

@@ -1,7 +1,6 @@
 // TODO: solve linter issue
 /* eslint-disable max-lines */
 import { User } from "@firebase/auth"
-import { formatISO } from "date-fns"
 import { firestore } from "features/home/firebase-init"
 import {
   collection,
@@ -24,11 +23,14 @@ import {
   LOCAL_CACHE_FIELD_NAME,
   SECS_IN_MIN,
 } from "shared/constants"
-import { DayData, PokoySession } from "shared/types"
+import { PokoySession, ServerDayData } from "shared/types"
 import { roundToSecondDecimalPlace } from "shared/utils/roundToSecondDecimalPlace"
 
-export const getPokoyData = (userId: string, seconds: number): PokoySession => {
-  const timestamp = formatISO(new Date())
+export const createPokoyData = (
+  userId: string,
+  seconds: number
+): PokoySession => {
+  const timestamp = new Date().toISOString()
   const duration = roundToSecondDecimalPlace(seconds / SECS_IN_MIN)
 
   return {
@@ -44,13 +46,13 @@ export const sendSessionFromSeconds = async (
   firestoreDB: Firestore,
   user: User | null | undefined,
   seconds: number
-): Promise<DocumentReference<DocumentData> | void> => {
+) => {
   if (!user) {
     console.error("User is not defined. Request not sended.", "user: ", user)
     return
   }
 
-  const pokoyData = getPokoyData(user.uid, seconds)
+  const pokoyData = createPokoyData(user.uid, seconds)
   return await sendPokoySessionToServer(firestoreDB, pokoyData)
 }
 
@@ -59,7 +61,7 @@ export const sendSessionFromLocalStore = async (
   firestoreDB: Firestore,
   user: User | null | undefined,
   LocalPokoyData: PokoySession
-): Promise<DocumentReference<DocumentData> | void> => {
+) => {
   const isSessionLongerThanMinute =
     Number(LocalPokoyData.duration) > SECS_IN_MIN
 
@@ -71,14 +73,16 @@ export const sendSessionFromLocalStore = async (
 }
 
 /* eslint-disable-next-line max-statements */
-const sendPokoySessionToServer = async (
+export const sendPokoySessionToServer = async (
   firestoreDB: Firestore,
   pokoyData: PokoySession
-): Promise<DocumentReference<DocumentData> | void> => {
+) => {
   const userId = pokoyData.userId
   const daysColRef = collection(firestoreDB, "days")
-  const dayDateString = new Date(pokoyData.timestamp).toDateString()
-  const dayTimestamp = Timestamp.fromDate(new Date(dayDateString))
+  const dayTimestamp = Timestamp.fromMillis(
+    new Date(pokoyData.timestamp).setHours(0, 0, 0, 0)
+  )
+
   const daysQuery = query(
     daysColRef,
     where("userId", "==", userId),
@@ -89,9 +93,9 @@ const sendPokoySessionToServer = async (
     const daysQuerySnapshot = await getDocs(daysQuery)
 
     if (daysQuerySnapshot.empty) {
-      await createNewDay(daysColRef, dayTimestamp, pokoyData, userId)
-    } else if (!daysQuerySnapshot.empty) {
-      await updateExistingDay(daysQuerySnapshot, pokoyData)
+      return await createNewDay(daysColRef, dayTimestamp, pokoyData, userId)
+    } else {
+      return await updateExistingDay(daysQuerySnapshot, pokoyData)
     }
   } catch (e) {
     console.error("⛔️", e)
@@ -123,7 +127,7 @@ const createNewDay = async (
   }
   const userStatsRef = userStatsQuerySnapshot.docs[0].ref
 
-  const newDayData: DayData = {
+  const newDayData: ServerDayData = {
     timestamp: dayTimestamp,
     count: dayData.count + 1,
     totalDuration: roundToSecondDecimalPlace(
@@ -135,6 +139,7 @@ const createNewDay = async (
   }
 
   await setDay(newDayRef, newDayData, pokoyData)
+  return newDayData
 }
 
 /* eslint-disable-next-line max-statements */
@@ -145,12 +150,12 @@ const updateExistingDay = async (
   // TODO: replace hardcode by dynamic code
   const dayDocRef = daysQuerySnapshot.docs[0].ref
   const daySnapshot = await getDoc(dayDocRef)
-  const dayData = daySnapshot.data() as DayData
+  const dayData = daySnapshot.data() as ServerDayData
 
   const totalDuration = dayData?.totalDuration ?? 0
   const meditations = dayData?.meditations ?? []
 
-  const newDayData: DayData = {
+  const newDayData: ServerDayData = {
     ...dayData,
     count: dayData?.count + 1,
     totalDuration: roundToSecondDecimalPlace(
@@ -160,11 +165,12 @@ const updateExistingDay = async (
   }
 
   await setDay(dayDocRef, newDayData, pokoyData)
+  return newDayData
 }
 
 const setDay = async (
   dayRef: DocumentReference<DocumentData>,
-  newDayData: any,
+  newDayData: ServerDayData,
   pokoyData: PokoySession
 ) => {
   try {

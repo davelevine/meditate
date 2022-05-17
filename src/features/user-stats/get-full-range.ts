@@ -1,6 +1,5 @@
-import { Timestamp } from "firebase/firestore"
 import { MILLIS_IN_DAY } from "shared/constants"
-import { DayData } from "shared/types"
+import { DayData, Milliseconds } from "shared/types"
 
 // NOTE: return array of every meditation for every day from first meditation date
 // TODO: refactor function
@@ -12,13 +11,11 @@ export const getFullRange = (daysWithMeditations: DayData[]) => {
     .reverse()
     .reduce(fillRangeWithMissedDays, [] as DayData[])
 
-  const todayTimestamp = Timestamp.fromMillis(
-    new Date(Date.now()).setHours(0, 0, 0, 0)
-  )
+  const todayTimestamp = new Date(Date.now()).setHours(0, 0, 0, 0)
   const lastDayInRange =
     statisticsWithMissedDays[statisticsWithMissedDays.length - 1]
 
-  const lastDayEqualToToday = lastDayInRange.timestamp.isEqual(todayTimestamp)
+  const lastDayEqualToToday = lastDayInRange.timestamp === todayTimestamp
   if (lastDayEqualToToday) {
     return statisticsWithMissedDays
   }
@@ -40,23 +37,22 @@ function fillRangeWithMissedDays(
   if (i === 0) return [...acc, day]
 
   const prevMeditationDate = arr[i - 1].timestamp
-  const expectedDate = Timestamp.fromMillis(
-    prevMeditationDate.toMillis() + MILLIS_IN_DAY
-  )
-  const isCurrentDateEqualToExpected = day.timestamp.isEqual(expectedDate)
+  const expectedDate = prevMeditationDate + MILLIS_IN_DAY
+
+  const isCurrentDateEqualToExpected = day.timestamp === expectedDate
   const accWithMissedDays = countAndPushMissedDays(acc, day, expectedDate)
 
   return !isCurrentDateEqualToExpected ? accWithMissedDays : [...acc, day]
 }
 
-function getNextDayTimestamp(date: Timestamp) {
-  return Timestamp.fromMillis(date.toMillis() + MILLIS_IN_DAY)
+function getNextDayTimestamp(date: Milliseconds) {
+  return date + MILLIS_IN_DAY
 }
 
 function countAndPushMissedDays(
   acc: DayData[],
   day: DayData,
-  expectedDate: Timestamp
+  expectedDate: Milliseconds
 ) {
   const dateDiffInDays = getDateDiffInDays(day.timestamp, expectedDate)
   const missedDays = createMissedDays(dateDiffInDays, expectedDate, day)
@@ -68,7 +64,7 @@ function countAndPushMissedDays(
 
 function createMissedDays(
   dateDiffInDays: number,
-  expectedDate: Timestamp,
+  expectedDate: Milliseconds,
   day: DayData
 ) {
   return Array(dateDiffInDays)
@@ -86,16 +82,17 @@ function createMissedDays(
     })
 }
 
-function getDateDiffInDays(dayTimestamp: Timestamp, expectedDate: Timestamp) {
-  const diffInDays = Math.ceil(
-    (dayTimestamp.toMillis() - expectedDate.toMillis()) / MILLIS_IN_DAY
-  )
+function getDateDiffInDays(
+  dayTimestamp: Milliseconds,
+  expectedDate: Milliseconds
+) {
+  const diffInDays = Math.ceil((dayTimestamp - expectedDate) / MILLIS_IN_DAY)
 
   if (diffInDays < 0) {
     const errorMsg = `
       Отрицательная разница между датами
-      currDate: ${dayTimestamp.toDate().toString()}
-      exptDate: ${expectedDate.toDate().toString()}
+      currDate: ${new Date(dayTimestamp).toString()}
+      exptDate: ${new Date(expectedDate).toString()}
       diffDays: ${diffInDays}
     `
     throw new Error(errorMsg)

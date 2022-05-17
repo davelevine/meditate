@@ -3,7 +3,7 @@ import styled, { css } from "styled-components"
 interface Props {
   content: string
   position?: "top" | "bottom"
-  wrap?: boolean
+  wrapContent?: boolean
 }
 
 const positionSnippet = css<Props>`
@@ -13,13 +13,13 @@ const positionSnippet = css<Props>`
 export const StyledTooltip = styled.span.attrs<Props>((props) => ({
   content: props.content,
   position: props.position || "top",
-  wrap: props.wrap || false,
+  wrapContent: props.wrapContent || false,
 }))<Props>`
   position: relative;
 
   &::after {
     content: "${({ content }) => content}";
-    white-space: ${({ wrap }) => (wrap ? `normal` : `nowrap`)};
+    white-space: ${({ wrapContent }) => (wrapContent ? `normal` : `nowrap`)};
     ${positionSnippet}
     position: absolute;
     display: block;

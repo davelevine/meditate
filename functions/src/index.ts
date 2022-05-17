@@ -16,7 +16,7 @@ exports.updateUserStats = functions.firestore
     const userStatsData = userStatsSnapshot?.data()
     
     const userStats = (userStatsData as UserStatsData) || INIT_USER_STATS
-    const totalDuration = userStats.totalDuration + dayData.totalDuration
+    const totalDuration = Math.round((userStats.totalDuration + dayData.totalDuration) * 100) / 100
     const userId = dayData.userId
     
     const newUserStats: UserStatsData = {

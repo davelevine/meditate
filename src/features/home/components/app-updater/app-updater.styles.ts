@@ -32,4 +32,5 @@ export const StyledAppVersion = styled.button`
   color: var(--c-gray);
   padding: 0.5rem;
   font-size: 1.5rem;
+  cursor: pointer;
 `
