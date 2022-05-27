@@ -1,9 +1,7 @@
 import { User } from "@firebase/auth"
-import { AppUpdater } from "features/home/components/app-updater"
 import { getChartDataThunk, getStatsThunk } from "features/pokoyThunks"
 import { useEffect, useMemo } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { AppDispatch, RootState } from "store"
+import { useAppDispatch, useAppSelector } from "store"
 import { StatsChart } from "./components/stats-chart/stats-chart.component"
 import { StatsNumbers } from "./components/stats-numbers/stats-numbers.component"
 import { Wrapper } from "./user-stats.styles"
@@ -15,12 +13,13 @@ interface Props {
 
 // TODO: rename to StatisticsPage
 export const UserStats: React.FC<Props> = ({ user }) => {
-  const userStatistics = useSelector((state: RootState) => state.pokoy.stats)
-  const userDaysData = useSelector((state: RootState) => state.pokoy.daysData)
-  const dispatch: AppDispatch = useDispatch()
+  const userStatistics = useAppSelector((state) => state.pokoy.stats)
+  const userDaysData = useAppSelector((state) => state.pokoy.daysData)
+  const dispatch = useAppDispatch()
 
   const userChartData = useMemo(() => {
-    if (!userStatistics || !userDaysData) return null
+    if (!userStatistics) return null
+
     return transformDayDataToChartData(userDaysData, userStatistics)
   }, [userDaysData, userStatistics])
 
@@ -41,7 +40,6 @@ export const UserStats: React.FC<Props> = ({ user }) => {
         <>
           <StatsNumbers statsData={userStatistics} />
           <StatsChart pokoyData={userChartData} />
-          <AppUpdater />
         </>
       ) : (
         <>
@@ -53,7 +51,6 @@ export const UserStats: React.FC<Props> = ({ user }) => {
           </p>
         </>
       )}
-      <AppUpdater />
     </Wrapper>
   )
 }

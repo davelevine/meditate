@@ -15,9 +15,8 @@ import { PokoySession, RequestStatus } from "shared/types"
 import { BottomTextWrapper, TopTextWrapper, Wrapper } from "./pokoy.styles"
 import { Sound } from "features/home/components/sound.component"
 import { FibSpiral } from "../fib-spiral/fib-spiral.component"
-import { useDispatch } from "react-redux"
 import { setMeditationThunk } from "features/pokoyThunks"
-import { AppDispatch } from "store"
+import { useAppDispatch } from "store"
 
 interface Props {
   user: User
@@ -33,7 +32,7 @@ export const Pokoy: React.FC<Props> = ({ user, stillLoading }) => {
     RequestStatus.NONE
   )
   useNoSleep(true)
-  const dispatch: AppDispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const minutes = Math.floor(timerDiff / SECS_IN_MIN)
 
   const finishTimer = useCallback(

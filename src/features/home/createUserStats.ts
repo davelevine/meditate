@@ -24,13 +24,12 @@ export const createUserStats = async (
   const q = query(statsColRef, where("userId", "==", user.uid), limit(1))
   const querySnapshot = await getDocs(q)
 
-  const newUserStats = {
-    ...INIT_USER_STATS,
-    userId: user.uid,
-  }
-
   if (querySnapshot.empty) {
     const userStatsRef = doc(statsColRef)
+    const newUserStats = {
+      ...INIT_USER_STATS,
+      userId: user.uid,
+    }
     setDoc(userStatsRef, newUserStats)
   }
 }

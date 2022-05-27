@@ -15,6 +15,7 @@ export const ButtonWrapper = styled.button<Props>`
   background-color: transparent;
   position: relative;
   border-radius: 50%;
+  max-width: 400px;
 
   z-index: 1;
 

@@ -24,14 +24,14 @@ import {
   SECS_IN_MIN,
 } from "shared/constants"
 import { PokoySession, ServerDayData } from "shared/types"
-import { roundToSecondDecimalPlace } from "shared/utils/roundToSecondDecimalPlace"
+import { roundToHundredth } from "shared/utils/roundToSecondDecimalPlace"
 
 export const createPokoyData = (
   userId: string,
   seconds: number
 ): PokoySession => {
   const timestamp = new Date().toISOString()
-  const duration = roundToSecondDecimalPlace(seconds / SECS_IN_MIN)
+  const duration = roundToHundredth(seconds / SECS_IN_MIN)
 
   return {
     userId,
@@ -130,9 +130,7 @@ const createNewDay = async (
   const newDayData: ServerDayData = {
     timestamp: dayTimestamp,
     count: dayData.count + 1,
-    totalDuration: roundToSecondDecimalPlace(
-      dayData.totalDuration + pokoyData.duration
-    ),
+    totalDuration: roundToHundredth(dayData.totalDuration + pokoyData.duration),
     meditations: [...dayData.meditations, pokoyData],
     statsRef: userStatsRef,
     userId,
@@ -158,9 +156,7 @@ const updateExistingDay = async (
   const newDayData: ServerDayData = {
     ...dayData,
     count: dayData?.count + 1,
-    totalDuration: roundToSecondDecimalPlace(
-      totalDuration + pokoyData.duration
-    ),
+    totalDuration: roundToHundredth(totalDuration + pokoyData.duration),
     meditations: [...meditations, pokoyData],
   }
 

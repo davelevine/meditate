@@ -5,8 +5,8 @@ import {
   MINS_IN_HOUR,
 } from "shared/constants"
 import {
-  roundToFirstDecimalPlace,
-  roundToSecondDecimalPlace,
+  roundToTenth,
+  roundToHundredth,
 } from "shared/utils/roundToSecondDecimalPlace"
 import {
   DayData,
@@ -37,9 +37,7 @@ export const getAverageMeditationPerDay = (statsData: UserStatsData) => {
   const statsMillisecondsDiff = Date.now() - firstMeditationDate
   const statsRangeInDays = statsMillisecondsDiff / MILLIS_IN_DAY
 
-  const average = roundToFirstDecimalPlace(
-    statsData.totalDuration / statsRangeInDays
-  )
+  const average = roundToTenth(statsData.totalDuration / statsRangeInDays)
 
   return average
 }
@@ -84,7 +82,7 @@ function getTotalDurationsAsAxisData(
 ): PokoyChartData[] {
   const totalDurationAsAxisData = chartData.reduce((acc, d, i, arr) => {
     const prevTotal = acc[i - 1]?.secondary
-    const total = roundToSecondDecimalPlace(
+    const total = roundToHundredth(
       d.secondary / 60 + (prevTotal || INITIAL_MEDITATION_DURATION)
     )
     const isFirstElementOfSlicedChartData =

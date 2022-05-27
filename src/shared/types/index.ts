@@ -73,6 +73,14 @@ export enum RequestStatus {
 }
 
 export interface PseudoDayData {
+  timestamp: Milliseconds
+  totalDuration: number
+  count: number
+  meditations: PokoySession[]
+  userId: string
+}
+
+export interface PseudoServerDayData {
   timestamp: Timestamp
   totalDuration: number
   count: number

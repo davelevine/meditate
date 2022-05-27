@@ -15,16 +15,11 @@ import {
   Timestamp,
   where,
 } from "firebase/firestore"
-import {
-  PokoySession,
-  DayData,
-  ServerDayData,
-  PseudoDayData,
-} from "shared/types"
+import { PokoySession, PseudoServerDayData } from "shared/types"
 
 // eslint-disable
 const timestamp = Timestamp.fromDate(new Date(new Date().toDateString()))
-const INIT_DAY_DATA: PseudoDayData = {
+const INIT_DAY_DATA: PseudoServerDayData = {
   // NOTE: hardcode!
   timestamp,
   count: 0,
@@ -69,7 +64,7 @@ export const migratePokoyToDay = async (
         const daySnapshot = await getDoc(dayDocRef)
         const dayData = daySnapshot.data()
 
-        const newDayData: PseudoDayData = {
+        const newDayData: PseudoServerDayData = {
           timestamp: dayTimestamp,
           count: dayData?.count + 1,
           totalDuration: dayData?.totalDuration + pokoyData.duration,
@@ -90,7 +85,7 @@ export const migratePokoyToDay = async (
         const newDayRef = doc(daysColRef)
         const dayData = INIT_DAY_DATA
 
-        const newDayData: PseudoDayData = {
+        const newDayData: PseudoServerDayData = {
           timestamp: dayTimestamp,
           count: dayData.count + 1,
           totalDuration: dayData.totalDuration + pokoyData.duration,

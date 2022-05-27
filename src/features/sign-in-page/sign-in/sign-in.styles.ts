@@ -44,5 +44,5 @@ export const Info = styled.p`
   border: 1px solid var(--c-gray);
   justify-content: center;
   align-content: baseline;
-  font-family: monospace;
+  font-family: var(--font-mono);
 `

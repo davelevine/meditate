@@ -4,11 +4,7 @@ import {
   ServiceWorkerUpdaterProps,
   LocalStoragePersistenceService,
 } from "@3m1/service-worker-updater"
-import {
-  StyledUpdateButton,
-  StyledAppVersion,
-  Wrapper,
-} from "./app-updater.styles"
+import { StyledUpdateButton, StyledAppVersion } from "./app-updater.styles"
 
 const AppUpdater: React.FC<ServiceWorkerUpdaterProps> = (props) => {
   const { newServiceWorkerDetected, onLoadNewServiceWorkerAccept } = props
@@ -19,7 +15,7 @@ const AppUpdater: React.FC<ServiceWorkerUpdaterProps> = (props) => {
   }, [])
 
   return (
-    <Wrapper>
+    <>
       {newServiceWorkerDetected ? (
         <span>
           New version detected {" → "}
@@ -32,10 +28,10 @@ const AppUpdater: React.FC<ServiceWorkerUpdaterProps> = (props) => {
         </span>
       ) : (
         <StyledAppVersion type="button" onClick={handleRefresh}>
-          ver. {currentVersion} ↻
+          v{currentVersion} ↻
         </StyledAppVersion>
       )}
-    </Wrapper>
+    </>
   )
 }
 

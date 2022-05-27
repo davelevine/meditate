@@ -4,17 +4,14 @@ export const SwipeButton = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  position: absolute;
-  bottom: 0;
   background-color: transparent;
   color: var(--c-foreground);
   transition: none;
-  padding: 1rem 2rem;
-  margin: 1rem;
-  margin-bottom: 10vh;
+  padding: 2rem;
   border-radius: 3rem;
 
   @media screen and (hover: none) and (orientation: landscape) {
+    padding: 1rem 1rem;
     display: none;
   }
 `

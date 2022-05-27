@@ -12,7 +12,7 @@ export const Wrapper = styled.div`
   }
 
   @media screen and (pointer: fine) {
-    padding: 18rem 0;
+    padding: 15rem 0;
   }
 `
 export const StyledStat = styled.span`

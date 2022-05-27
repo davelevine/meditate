@@ -4,15 +4,14 @@ export const Wrapper = styled.div`
   display: grid;
   max-height: 100%;
   height: 100%;
-  grid-template-rows: 4fr auto 1.5fr 3fr;
+  grid-template-rows: 1fr auto 1fr;
   grid-template-areas:
     "countdown"
     "spiral"
-    "tips"
-    "updater";
+    "tips";
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 0 1rem;
   row-gap: 3rem;
 
@@ -41,6 +40,9 @@ export const TopTextWrapper = styled.p`
 export const BottomTextWrapper = styled.div`
   grid-area: tips;
   margin: 0;
+  width: auto;
+  justify-self: center;
+  align-self: flex-start;
 
   @media screen and (hover: none) and (orientation: landscape) {
     margin: 0;

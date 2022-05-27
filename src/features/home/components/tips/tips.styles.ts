@@ -6,15 +6,16 @@ export const Wrapper = styled.span`
   margin-bottom: 0;
 
   display: grid;
-  grid-template-areas: "current t next";
-  grid-gap: 2rem;
+  grid-template-areas: "current arrow next";
+  grid-template-columns: 1fr auto 1fr;
+  gap: 2rem;
   justify-items: center;
   justify-content: center;
   align-items: center;
 `
 
 export const StyledTip = styled.span`
-  grid-area: t;
+  grid-area: arrow;
   line-height: 3;
 
   @media screen and (orientation: landscape) {
@@ -43,7 +44,7 @@ export const StageWrapper = styled.div`
 export const StageNumber = styled.span`
   grid-row: 1 / 3;
   grid-area: number;
-  font-size: 5rem;
+  font-size: 6rem;
   line-height: 1;
 `
 
