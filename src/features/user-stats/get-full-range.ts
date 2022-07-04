@@ -3,13 +3,14 @@ import { DayData, Milliseconds } from "shared/types"
 
 // NOTE: return array of every meditation for every day from first meditation date
 // TODO: refactor function
+// TODO: add test
 // eslint-disable-next-line max-statements
 export const getFullRange = (daysWithMeditations: DayData[]) => {
   if (daysWithMeditations.length === 0) return []
 
   const statisticsWithMissedDays = daysWithMeditations
     .reverse()
-    .reduce(fillRangeWithMissedDays, [] as DayData[])
+    .reduce(addMissedDays, [] as DayData[])
 
   const todayTimestamp = new Date(Date.now()).setHours(0, 0, 0, 0)
   const lastDayInRange =
@@ -28,7 +29,7 @@ export const getFullRange = (daysWithMeditations: DayData[]) => {
 }
 
 // eslint-disable-next-line max-statements
-function fillRangeWithMissedDays(
+function addMissedDays(
   acc: DayData[],
   day: DayData,
   i: number,
@@ -98,5 +99,5 @@ function getDateDiffInDays(
     throw new Error(errorMsg)
   }
 
-  return Math.abs(diffInDays)
+  return diffInDays
 }

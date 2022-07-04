@@ -7,6 +7,25 @@
 	backface-visibility: hidden;
 }
 
+#root {
+  height: 100%;
+}
+
+html {
+  height: 100%;
+  font-size: 8px;
+}
+
+body {
+  height: 100%;
+  overflow-y: hidden;
+  margin: 0 auto;
+  font-size: 2rem;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none;
+}
+
 :root {
 	font-variant-ligatures: common-ligatures;
 	text-rendering: optimizeLegibility;
@@ -92,9 +111,8 @@ textarea {
 
 body {
 	color: var(--c-foreground);
-	background-color: var(--c-background);
+	background-color: var(--c-spiral);
 
-	margin: 3rem auto;
 	max-width: 60rem;
 	font-size: large;
 }
@@ -178,14 +196,6 @@ a[href^="http"]::after {
 	pointer-events: none;
 }
 
-a:hover,
-a:focus {
-	outline: none;
-	color: var(--c-brand);
-	background-image: var(--link-bg-focus);
-	transition-duration: 0s;
-}
-
 /* buttons */
 button {
 	position: relative;
@@ -230,7 +240,7 @@ button:focus::before {
 
 button:active {
 	outline: none;
-	transform: scale(0.95);
+	transform: scale(0.98);
 }
 
 button:disabled {

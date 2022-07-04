@@ -1,34 +1,47 @@
 import { collection } from "@firebase/firestore"
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import { User } from "firebase/auth"
-import { getDocs, limit, query, setDoc, where } from "firebase/firestore"
-import { INIT_USER_STATS } from "shared/constants"
-import { DayData, UserStatsData } from "shared/types"
-import { serverDayDataToStore } from "shared/utils/adapters"
+import {
+  getDocs,
+  limit,
+  query,
+  setDoc,
+  Timestamp,
+  where,
+} from "firebase/firestore"
+import { INIT_SERVER_USER_STATS } from "shared/constants"
+import { DayData, ServerUserStatsData } from "shared/types"
+import {
+  serverDayDataToStoreAdapter,
+  serverStatsDataToStoreAdapter,
+} from "shared/utils/adapters"
 import { roundToHundredth } from "shared/utils/roundToSecondDecimalPlace"
 import { AppDispatch, RootState } from "store"
+import { firestore } from "../home/firebase-init"
+import { FEATURE_NAME, userStatsActions } from "./store/user-stats.slice"
+import { fetchDays, fetchStats } from "./get-data"
+import { getFullRange } from "./get-full-range"
+import { cutDaysDataRange } from "./utils"
 import {
-  createPokoyData,
-  sendPokoySessionToServer,
-} from "./home/components/pokoy/writeSessionToServer"
-import { firestore } from "./home/firebase-init"
-import { FEATURE_NAME, pokoyActions } from "./pokoySlice"
-import { fetchDays, fetchStats } from "./user-stats/get-data"
-import { getFullRange } from "./user-stats/get-full-range"
-import { sliceDaysDataRange } from "./user-stats/utils"
+  createSessionData,
+  sendMeditationToServer,
+} from "features/home/components/pokoy/writeSessionToServer"
 
 export const getStatsThunk = createAsyncThunk(
   `${FEATURE_NAME}/getStats` as const,
   // eslint-disable-next-line max-statements
   async (user: User, thunkAPI) => {
-    const statsData = await fetchStats(user)
+    try {
+      const statsData = await fetchStats(user)
+      if (statsData.firstMeditationDate === null) {
+        throw new Error("there is no first meditation date")
+      }
 
-    if (statsData.firstMeditationDate === null) {
-      throw new Error("there is no first meditation date")
+      const setStatsAction = userStatsActions.setStats(statsData)
+      thunkAPI.dispatch(setStatsAction)
+    } catch (error) {
+      console.error(error)
     }
-
-    const setStatsAction = pokoyActions.setStats(statsData)
-    thunkAPI.dispatch(setStatsAction)
   }
 )
 
@@ -45,9 +58,9 @@ export const getChartDataThunk = createAsyncThunk(
     }))
 
     const daysDataFullRange = getFullRange(shallowDaysWithMeditations)
-    const slicedChartData = sliceDaysDataRange(daysDataFullRange)
+    const slicedChartData = cutDaysDataRange(daysDataFullRange)
 
-    const setChartDataAction = pokoyActions.setChartData(slicedChartData)
+    const setChartDataAction = userStatsActions.setChartData(slicedChartData)
     thunkAPI.dispatch(setChartDataAction)
   }
 )
@@ -61,20 +74,25 @@ export const setUserStatsThunk = createAsyncThunk(
     const querySnapshot = await getDocs(q)
 
     const userStatsRef = querySnapshot.docs[0].ref
-    const userStatsData = querySnapshot.docs[0].data() as UserStatsData
+    const userStatsData = querySnapshot.docs[0].data() as ServerUserStatsData
 
     const { totalDuration, count, firstMeditationDate } =
-      userStatsData || INIT_USER_STATS
-    const newUserStats: UserStatsData = {
+      userStatsData || INIT_SERVER_USER_STATS
+
+    const newUserStats: ServerUserStatsData = {
       count: count + 1,
       userId: dayData.userId,
+      // TODO: add cloud function to recalculate total duration
       totalDuration: roundToHundredth(totalDuration + dayData.totalDuration),
-      firstMeditationDate: firstMeditationDate || dayData.timestamp,
+      firstMeditationDate:
+        firstMeditationDate || Timestamp.fromMillis(dayData.timestamp),
     }
 
     try {
       await setDoc(userStatsRef, newUserStats)
-      thunkAPI.dispatch(pokoyActions.setStats(newUserStats))
+      const newUserStatsState = serverStatsDataToStoreAdapter(newUserStats)
+
+      thunkAPI.dispatch(userStatsActions.setStats(newUserStatsState))
       console.info("SUCCESS")
     } catch (e) {
       console.error("ERROR: ", e)
@@ -101,21 +119,20 @@ export const setMeditationThunk = createAsyncThunk<void, Payload, ThunkAPI>(
       return
     }
 
-    const pokoyData = createPokoyData(user.uid, seconds)
-
-    const serverDayData = await sendPokoySessionToServer(firestore, pokoyData)
+    const sessionData = createSessionData(user.uid, seconds)
+    const serverDayData = await sendMeditationToServer(firestore, sessionData)
 
     if (!serverDayData) throw new Error("Request failure")
 
-    const dayData = serverDayDataToStore(serverDayData)
+    const dayData = serverDayDataToStoreAdapter(serverDayData)
     const index = thunkAPI
       .getState()
-      .pokoy.daysData.findIndex((d) => d.timestamp === dayData.timestamp)
+      .userStats.daysData.findIndex((d) => d.timestamp === dayData.timestamp)
 
     if (index === -1) {
-      thunkAPI.dispatch(pokoyActions.addDay(dayData))
+      thunkAPI.dispatch(userStatsActions.addDay(dayData))
     } else {
-      thunkAPI.dispatch(pokoyActions.updateDay({ dayData, index }))
+      thunkAPI.dispatch(userStatsActions.updateDay({ dayData, index }))
     }
 
     thunkAPI.dispatch(setUserStatsThunk({ dayData, user }))

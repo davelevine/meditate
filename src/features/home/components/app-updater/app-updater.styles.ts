@@ -13,5 +13,4 @@ export const StyledAppVersion = styled.button`
   padding: 0.5rem;
   font-size: 1rem;
   cursor: pointer;
-  margin-left: auto;
 `

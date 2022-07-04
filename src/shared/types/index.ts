@@ -48,18 +48,19 @@ interface Flavoring<FlavorT> {
 export type Flavor<T, FlavorT> = T & Flavoring<FlavorT>
 
 export type Milliseconds = Flavor<number, "Miliseconds">
+export type Minutes = Flavor<number, "Minutes">
 
 export type DateString = Flavor<string, "DateString">
 
 export interface UserStatsData {
-  firstMeditationDate: Milliseconds | null
-  totalDuration: number
+  firstMeditationDate: Milliseconds
+  totalDuration: Minutes
   count: number
   userId: string
 }
 
 export interface ServerUserStatsData {
-  firstMeditationDate: Timestamp | null
+  firstMeditationDate: Timestamp
   totalDuration: number
   count: number
   userId: string

@@ -1,12 +1,17 @@
 import { AnyAction, configureStore, ThunkAction } from "@reduxjs/toolkit"
-import { mainScreenSliceReducer } from "features/mainScreenSlice"
-import { pokoySliceReducer } from "features/pokoySlice"
+import { aboutPageSliceReducer } from "features/about-page/about-page.slice"
+import { mainScreenSliceReducer } from "features/home/main-screen.slice"
+import { userStatsSliceReducer } from "features/user-stats/store/user-stats.slice"
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux"
 
 export const store = configureStore({
   reducer: {
-    pokoy: pokoySliceReducer,
+    // TODO: extract main page feature and state
+    // TODO: rename to stats
+    userStats: userStatsSliceReducer,
+    // TODO: rename to timer
     mainScreen: mainScreenSliceReducer,
+    aboutPage: aboutPageSliceReducer,
   },
 })
 

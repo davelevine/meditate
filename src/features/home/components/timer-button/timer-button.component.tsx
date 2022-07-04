@@ -1,40 +1,60 @@
 import React from "react"
 import useSound from "use-sound"
+import styles from "./timer-button.module.css"
 import clickSfx from "shared/assets/sounds/finger-snap.mp3"
-import { ButtonWrapper } from "./timer-button.styles"
-import { RequestStatus } from "shared/types"
+import { LongPressDetectEvents, useLongPress } from "use-long-press"
 
 type Props = {
   handleTimerClick: () => void
   isTimerStarted: boolean
-  requestStatus: RequestStatus
-  stillLoading: boolean
+  authLoading: boolean
 }
 
 export const TimerButton: React.FC<Props> = ({
   isTimerStarted = false,
   handleTimerClick,
-  requestStatus,
   children,
-  stillLoading,
+  authLoading,
 }) => {
   const [playClick] = useSound(clickSfx)
+  const [isTimerPressed, setIsTimerPressed] = React.useState(false)
+
+  const bindLongPress = useLongPress(
+    () => {
+      clickWithSound()
+    },
+    {
+      threshold: 600,
+      captureEvent: true,
+      cancelOnMovement: false,
+      detect: LongPressDetectEvents.BOTH,
+      onStart: () => setIsTimerPressed(true),
+      onFinish: () => setIsTimerPressed(false),
+      onCancel: () => setIsTimerPressed(false),
+    }
+  )
 
   const clickWithSound = React.useCallback(() => {
     playClick()
     handleTimerClick()
   }, [handleTimerClick, playClick])
 
+  const classNames = React.useMemo(() => {
+    return `${styles.timerButton} ${
+      isTimerStarted ? styles.timerStarted : null
+    } ${authLoading ? styles.authLoading : null}`
+  }, [authLoading, isTimerStarted])
+
+  const pressProgressClassNames = React.useMemo(() => {
+    return `${styles.pressProgress} ${
+      isTimerPressed ? styles.timerButtonPressed : null
+    }`
+  }, [isTimerPressed])
+
   return (
-    <ButtonWrapper
-      stillLoading={stillLoading}
-      onClick={clickWithSound}
-      requestStatus={requestStatus}
-      isStarted={isTimerStarted}
-      type="button"
-      autoFocus
-    >
+    <button {...bindLongPress()} className={classNames} type="button" autoFocus>
+      <div className={pressProgressClassNames} />
       {children}
-    </ButtonWrapper>
+    </button>
   )
 }

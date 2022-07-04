@@ -1,20 +1,34 @@
-import { mainScreenActions } from "features/mainScreenSlice"
-import React from "react"
-import { useAppDispatch, useAppSelector } from "store"
+import React, { useCallback, useMemo } from "react"
 import { Circle, SwipeButton } from "./views-switcher.styles"
-const { toggleSlideIndex } = mainScreenActions
 
-export const ViewsSwitcher: React.FC = () => {
-  const slideIndex = useAppSelector(
-    // TODO: extract to selector
-    (state) => state.mainScreen.slideIndex
+interface Props {
+  slidesCount: number
+  setSlideIndex: (index: number) => void
+  slideIndex: number
+  autoFocus?: boolean
+}
+
+export const ViewsSwitcher: React.FC<Props> = ({
+  slidesCount,
+  setSlideIndex,
+  slideIndex,
+  autoFocus = false,
+}) => {
+  const slideNums = useMemo(
+    () => new Array(slidesCount).fill(null),
+    [slidesCount]
   )
-  const dispatch = useAppDispatch()
+
+  const nextSlide = useCallback(
+    () => setSlideIndex(slideIndex + 1),
+    [setSlideIndex, slideIndex]
+  )
 
   return (
-    <SwipeButton type="button" onClick={() => dispatch(toggleSlideIndex())}>
-      <Circle isActive={slideIndex === 0} />
-      <Circle isActive={slideIndex === 1} />
+    <SwipeButton type="button" onClick={nextSlide} autoFocus={autoFocus}>
+      {slideNums.map((_, i) => (
+        <Circle isActive={slideIndex === i} key={i} />
+      ))}
     </SwipeButton>
   )
 }

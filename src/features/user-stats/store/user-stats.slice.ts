@@ -4,23 +4,23 @@ import {
   getChartDataThunk,
   setMeditationThunk,
   getStatsThunk,
-} from "./pokoyThunks"
+} from "../user-stats.thunks"
 
-export const FEATURE_NAME = "pokoy"
+export const FEATURE_NAME = "user-stats"
 
-export interface PokoyState {
+export interface UserStatsState {
   daysData: DayData[]
   stats: UserStatsData | null
   status: "idle" | "loading" | "error" | "loaded"
 }
 
-const initialState: PokoyState = {
+const initialState: UserStatsState = {
   daysData: [],
   stats: null,
   status: "idle",
 }
 
-export const pokoySlice = createSlice({
+export const userStatsSlice = createSlice({
   name: FEATURE_NAME,
   initialState,
   reducers: {
@@ -69,8 +69,8 @@ export const pokoySlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const pokoyActions = {
-  ...pokoySlice.actions,
+export const userStatsActions = {
+  ...userStatsSlice.actions,
 }
 
-export const pokoySliceReducer = pokoySlice.reducer
+export const userStatsSliceReducer = userStatsSlice.reducer

@@ -7,14 +7,8 @@ import {
 } from "@firebase/firestore"
 import { firestore } from "features/home/firebase-init"
 import { doc, getDocs, query } from "firebase/firestore"
-import { PokoySession, UserStatsData } from "shared/types"
-
-const INIT_STATS_DATA: UserStatsData = {
-  firstMeditationDate: null,
-  count: 0,
-  totalDuration: 0,
-  userId: "",
-}
+import { INIT_SERVER_USER_STATS } from "shared/constants"
+import { PokoySession } from "shared/types"
 
 interface UserData {
   email: string
@@ -46,7 +40,7 @@ export const migrateUserToStats = async (
 
       const newUserStatsRef = doc(userStatsColRef)
       const newUserStatsData = {
-        ...INIT_STATS_DATA,
+        ...INIT_SERVER_USER_STATS,
         userId,
       }
 

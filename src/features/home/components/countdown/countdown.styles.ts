@@ -8,6 +8,7 @@ export const StyledCountdown = styled.span`
   line-height: 1;
   cursor: help;
   color: var(--c-foreground);
+  -webkit-touch-callout: none !important;
 
   /* TODO: add breakpoint to css vars */
   @media screen and (max-width: ${TABLET_MIN_WIDTH}) {

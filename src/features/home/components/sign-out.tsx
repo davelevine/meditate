@@ -4,12 +4,12 @@ import styled from "styled-components/macro"
 
 // TODO: extract
 const StyledButton = styled.button`
-  background-color: transparent;
-  padding-left: 0;
+  background-color: var(--c-background);
   font-size: inherit;
   color: inherit;
   cursor: pointer;
   height: 100%;
+  margin-right: auto;
 
   @media screen and (hover: none) and (orientation: landscape) {
     display: none;

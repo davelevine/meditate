@@ -17,6 +17,7 @@ export const SignInButton = styled.button`
   border: 0.5rem solid var(--c-gray);
   width: 60%;
   color: var(--c-foreground);
+  white-space: nowrap;
 
   &:before {
     border-radius: 50%;

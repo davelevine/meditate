@@ -63,3 +63,11 @@ export const StyledDesc = styled.span`
     display: none;
   }
 `
+
+export const StyledTrianle = styled.span`
+  width: 0;
+  height: 0;
+  border-top: 1rem solid transparent;
+  border-bottom: 1rem solid transparent;
+  border-left: 1rem solid currentColor;
+`

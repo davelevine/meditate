@@ -22,4 +22,4 @@ Just visit https://pokoy.app and play! Can be installed to homescreen as PWA
 * [x] statistics
 * [x] auto updates
 * [x] visualisation of statistics
-* [ ] onboarding
+* [x] onboarding

@@ -24,3 +24,5 @@ yarn-debug.log*
 yarn-error.log*
 .eslintcache
 .vscode
+bump.json
+api-manual-test.http

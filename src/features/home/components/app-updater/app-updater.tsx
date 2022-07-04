@@ -1,4 +1,4 @@
-import React, { useCallback } from "react"
+import React, { useCallback, useEffect } from "react"
 import {
   withServiceWorkerUpdater,
   ServiceWorkerUpdaterProps,
@@ -8,10 +8,21 @@ import { StyledUpdateButton, StyledAppVersion } from "./app-updater.styles"
 
 const AppUpdater: React.FC<ServiceWorkerUpdaterProps> = (props) => {
   const { newServiceWorkerDetected, onLoadNewServiceWorkerAccept } = props
-  const currentVersion = process?.env?.REACT_APP_VERSION
+  const [currentVersion, setCurrentVersion] = React.useState("2.0.0")
+
+  useEffect(() => {
+    try {
+      const versionNumber = process?.env?.REACT_APP_VERSION
+      if (versionNumber) {
+        setCurrentVersion(`v${versionNumber}`)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }, [])
 
   const handleRefresh = useCallback((): void => {
-    window.location.reload()
+    window?.location.reload()
   }, [])
 
   return (
@@ -28,7 +39,7 @@ const AppUpdater: React.FC<ServiceWorkerUpdaterProps> = (props) => {
         </span>
       ) : (
         <StyledAppVersion type="button" onClick={handleRefresh}>
-          v{currentVersion} ↻
+          {currentVersion} ↻
         </StyledAppVersion>
       )}
     </>

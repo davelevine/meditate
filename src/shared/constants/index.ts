@@ -20,8 +20,6 @@ export enum CSS_COLOR_VARIABLES {
   WHITE = "--c-white",
 }
 
-export const SERVER_URL = process.env.REACT_APP_SHEET_URL
-
 export const LOCAL_CACHE_FIELD_NAME = "pokoy-last-session"
 
 export const REQUEST_STATUS_TO_COLOR_MAP = new Map<RequestStatus, string>([

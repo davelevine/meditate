@@ -1,38 +1,33 @@
 import { useState, useEffect, useCallback } from "react"
 import { User } from "@firebase/auth"
-import { useNoSleep } from "use-no-sleep"
-import {
-  LOCAL_CACHE_FIELD_NAME,
-  MAX_TIMER_SECONDS,
-  SECS_IN_MIN,
-} from "shared/constants"
+import { LOCAL_CACHE_FIELD_NAME, SECS_IN_MIN } from "shared/constants"
 import { firestore } from "../../firebase-init"
 import { TimerButton } from "../timer-button/timer-button.component"
 import { Countdown } from "../countdown/countdown.component"
 import { Tips } from "../tips"
 import { sendSessionFromLocalStore } from "./writeSessionToServer"
-import { PokoySession, RequestStatus } from "shared/types"
+import { PokoySession } from "shared/types"
 import { BottomTextWrapper, TopTextWrapper, Wrapper } from "./pokoy.styles"
 import { Sound } from "features/home/components/sound.component"
 import { FibSpiral } from "../fib-spiral/fib-spiral.component"
-import { setMeditationThunk } from "features/pokoyThunks"
+import { setMeditationThunk } from "features/user-stats/user-stats.thunks"
 import { useAppDispatch } from "store"
+import useNoSleep from "shared/hooks/use-no-sleep"
 
 interface Props {
   user: User
-  stillLoading: boolean
+  authLoading: boolean
 }
 
 // TODO: refactor component
-export const Pokoy: React.FC<Props> = ({ user, stillLoading }) => {
+export const Pokoy: React.FC<Props> = ({ user, authLoading }) => {
   const [currentTimerId, setCurrentTimerId] = useState<number | null>(null)
   const [timerDiff, setTimerDiff] = useState<number>(0)
+  // TODO: extract to store
   const [isStarted, setStartedFlag] = useState(false)
-  const [requestStatus, setRequestStatus] = useState<RequestStatus>(
-    RequestStatus.NONE
-  )
-  useNoSleep(true)
+  useNoSleep(isStarted)
   const dispatch = useAppDispatch()
+
   const minutes = Math.floor(timerDiff / SECS_IN_MIN)
 
   const finishTimer = useCallback(
@@ -50,38 +45,25 @@ export const Pokoy: React.FC<Props> = ({ user, stillLoading }) => {
       }
 
       try {
-        setRequestStatus(RequestStatus.REQUEST)
         // NOTE: line below for fast debugging
         // dispatch(setMeditationThunk({ user, seconds: 61 }))
         dispatch(setMeditationThunk({ user, seconds: timerDiff }))
-
-        setRequestStatus(RequestStatus.SUCCESS)
       } catch (e) {
-        setRequestStatus(RequestStatus.FAILURE)
         console.error(e)
       }
     },
     [currentTimerId, dispatch, user]
   )
 
-  const handleTimer = useCallback(
-    (startTime: number) => {
-      const secondsNow = Math.round(Date.now() / 1000)
-      const secondsDiff = secondsNow - startTime
-      setTimerDiff(secondsDiff)
-
-      const isTimerDiffMoreThanMinute = timerDiff === MAX_TIMER_SECONDS
-      if (isTimerDiffMoreThanMinute) {
-        finishTimer(timerDiff)
-      }
-    },
-    [finishTimer, timerDiff]
-  )
+  const handleTimer = useCallback((startTime: number) => {
+    const secondsNow = Math.round(Date.now() / 1000)
+    const secondsDiff = secondsNow - startTime
+    setTimerDiff(secondsDiff)
+  }, [])
 
   const startTimer = useCallback(() => {
     const startInSeconds = Math.round(Date.now() / 1000)
     setStartedFlag(true)
-    setRequestStatus(RequestStatus.NONE)
 
     const newTimerId = window.setInterval(
       () => handleTimer(startInSeconds),
@@ -119,21 +101,20 @@ export const Pokoy: React.FC<Props> = ({ user, stillLoading }) => {
   return (
     <Wrapper>
       <TopTextWrapper>
-        {!stillLoading && <Countdown seconds={timerDiff} />}
+        {!authLoading && <Countdown seconds={timerDiff} />}
       </TopTextWrapper>
 
       <TimerButton
         handleTimerClick={handleClick}
         isTimerStarted={isStarted}
-        requestStatus={requestStatus}
-        stillLoading={stillLoading}
+        authLoading={authLoading}
       >
         <Sound progress={timerDiff} />
-        <FibSpiral seconds={timerDiff} stillLoading={stillLoading} />
+        <FibSpiral seconds={timerDiff} authLoading={authLoading} />
       </TimerButton>
 
       <BottomTextWrapper>
-        {!stillLoading && <Tips minutes={minutes} isTimerStarted={isStarted} />}
+        {!authLoading && <Tips minutes={minutes} isTimerStarted={isStarted} />}
       </BottomTextWrapper>
     </Wrapper>
   )

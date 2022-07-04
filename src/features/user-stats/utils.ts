@@ -10,6 +10,8 @@ import {
 } from "shared/utils/roundToSecondDecimalPlace"
 import {
   DayData,
+  Milliseconds,
+  Minutes,
   MockDayData,
   PokoyChartData,
   UserStatsData,
@@ -28,16 +30,17 @@ export const getTotalInHours = (minutes: number): number => {
 }
 
 // eslint-disable-next-line max-statements
-export const getAverageMeditationPerDay = (statsData: UserStatsData) => {
-  if (!statsData || !statsData.firstMeditationDate) {
+export const getAverageMeditationPerDay = (
+  firstMeditationDate: Milliseconds,
+  totalDuration: Minutes
+) => {
+  if (!firstMeditationDate) {
     throw new Error("there are no user statistics yet")
   }
 
-  const { firstMeditationDate } = statsData
   const statsMillisecondsDiff = Date.now() - firstMeditationDate
-  const statsRangeInDays = statsMillisecondsDiff / MILLIS_IN_DAY
-
-  const average = roundToTenth(statsData.totalDuration / statsRangeInDays)
+  const statsRangeInDays = Math.floor(statsMillisecondsDiff / MILLIS_IN_DAY)
+  const average = roundToTenth(totalDuration / statsRangeInDays)
 
   return average
 }
@@ -107,7 +110,7 @@ function getTotalFromSlicedChartData(chartData: PokoyChartData[]) {
   return firstElement.secondary
 }
 
-export const sliceDaysDataRange = (daysData: DayData[]) => {
+export const cutDaysDataRange = (daysData: DayData[]) => {
   const dataLength = daysData.length
 
   if (dataLength <= MAX_DAYS_DATA_LENGTH) {

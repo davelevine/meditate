@@ -26,7 +26,7 @@ import {
 import { PokoySession, ServerDayData } from "shared/types"
 import { roundToHundredth } from "shared/utils/roundToSecondDecimalPlace"
 
-export const createPokoyData = (
+export const createSessionData = (
   userId: string,
   seconds: number
 ): PokoySession => {
@@ -52,8 +52,8 @@ export const sendSessionFromSeconds = async (
     return
   }
 
-  const pokoyData = createPokoyData(user.uid, seconds)
-  return await sendPokoySessionToServer(firestoreDB, pokoyData)
+  const pokoyData = createSessionData(user.uid, seconds)
+  return await sendMeditationToServer(firestoreDB, pokoyData)
 }
 
 // TODO: add working with several session not just last
@@ -69,11 +69,11 @@ export const sendSessionFromLocalStore = async (
     return
   }
 
-  return await sendPokoySessionToServer(firestoreDB, LocalPokoyData)
+  return await sendMeditationToServer(firestoreDB, LocalPokoyData)
 }
 
 /* eslint-disable-next-line max-statements */
-export const sendPokoySessionToServer = async (
+export const sendMeditationToServer = async (
   firestoreDB: Firestore,
   pokoyData: PokoySession
 ) => {

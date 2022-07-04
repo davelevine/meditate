@@ -1,7 +1,8 @@
-import { UserStatsData, PseudoDayData } from "shared/types"
+import { Timestamp } from "firebase/firestore"
+import { PseudoDayData, ServerUserStatsData } from "shared/types"
 
-export const INIT_USER_STATS: UserStatsData = {
-  firstMeditationDate: null,
+export const INIT_SERVER_USER_STATS: ServerUserStatsData = {
+  firstMeditationDate: Timestamp.fromDate(new Date()),
   totalDuration: 0,
   count: 0,
   userId: "",

@@ -19,7 +19,10 @@ export function getForesightDaysData(
 ) {
   const lastData = daysData[daysData.length - 1]
 
-  const averageMeditationDuration = getAverageMeditationPerDay(stats)
+  const averageMeditationDuration = getAverageMeditationPerDay(
+    stats.firstMeditationDate,
+    stats.totalDuration
+  )
   const daysToNextMilestone = additionalDataLength
 
   const additionalDaysData: MockDayData[] = new Array(daysToNextMilestone)
@@ -37,13 +40,12 @@ export async function fetchStats(user: User): Promise<UserStatsData> {
   const daysColSnapshot = await getDocs(statsQuery)
   const statsData = daysColSnapshot?.docs[0]?.data() as ServerUserStatsData
 
-  const shallowStatsData: UserStatsData = {
+  const userStatsData: UserStatsData = {
     ...statsData,
-    // TODO: remove nullable value from type
-    firstMeditationDate: statsData.firstMeditationDate?.toMillis() || null,
+    firstMeditationDate: statsData?.firstMeditationDate?.toMillis() || 0,
   }
 
-  return shallowStatsData
+  return userStatsData
 }
 
 export async function fetchDays(user: User): Promise<ServerDayData[]> {

@@ -12,23 +12,23 @@ import {
 import { THIRD_PART } from "features/user-stats/constants"
 
 interface Props {
-  pokoyData: UserSerie<PokoyChartData>[]
+  chartData: UserSerie<PokoyChartData>[]
 }
 
-export const StatsChart: React.FC<Props> = ({ pokoyData }) => {
+export const StatsChart: React.FC<Props> = ({ chartData }) => {
   const getDatumStyle = useCallback(
     (datum: Datum<PokoyChartData>): DatumStyles => {
-      const dataLength = pokoyData[0].data.length
+      const dataLength = chartData[0].data.length
       const startPositionOfForesight = Math.round(dataLength / (1 + THIRD_PART))
 
       return datum.index + 1 > startPositionOfForesight ? { opacity: 0.5 } : {}
     },
-    [pokoyData]
+    [chartData]
   )
 
   const chartOptions = useMemo(
     () => ({
-      data: pokoyData,
+      data: chartData,
       getDatumStyle,
       //
       dark: true,
@@ -39,7 +39,7 @@ export const StatsChart: React.FC<Props> = ({ pokoyData }) => {
       secondaryAxes: SECONDARY_AXES_CONFIG,
       secondaryCursor: SECONDARY_CURSOR_CONFIG,
     }),
-    [getDatumStyle, pokoyData]
+    [getDatumStyle, chartData]
   )
 
   return (

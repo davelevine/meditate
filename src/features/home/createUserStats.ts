@@ -8,7 +8,7 @@ import {
   setDoc,
   where,
 } from "firebase/firestore"
-import { INIT_USER_STATS } from "shared/constants"
+import { INIT_SERVER_USER_STATS } from "shared/constants"
 import { firestore } from "./firebase-init"
 
 // eslint-disable-next-line max-statements
@@ -27,7 +27,7 @@ export const createUserStats = async (
   if (querySnapshot.empty) {
     const userStatsRef = doc(statsColRef)
     const newUserStats = {
-      ...INIT_USER_STATS,
+      ...INIT_SERVER_USER_STATS,
       userId: user.uid,
     }
     setDoc(userStatsRef, newUserStats)

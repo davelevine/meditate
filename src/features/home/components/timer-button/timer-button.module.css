@@ -1,0 +1,80 @@
+@keyframes pulse-animation {
+  13% {
+    box-shadow: 0 0 0 0 var(--c-gray);
+    opacity: 1;
+  }
+  100% {
+    box-shadow: 0 0 0 3rem var(--c-gray);
+    opacity: 0;
+  }
+}
+
+.timerButton {
+  color: var(--c-extra-gray);
+  background-color: var(--c-background);
+  grid-area: spiral;
+  padding: 0px;
+  display: block;
+  position: relative;
+  border-radius: 50%;
+  z-index: 1;
+  transform: scale(0.9);
+
+  /* box-shadow: 0 0 0 0.5rem var(--c-gray), 0 0 0.5rem 1rem var(--c-spiral); */
+  will-change: background-color, box-shadow, opacity, transform;
+  transition: background-color 0.3s ease-in, box-shadow 0.3s ease-in,
+    transform 0.3s ease-in;
+}
+.timerButton:active {
+  /* NOTE: to override global active transform */
+  transform: scale(0.9);
+}
+.timerButton:after {
+  display: block;
+  position: absolute;
+  top: 0;
+  content: "";
+  width: 100%;
+  height: 100%;
+  color: inherit;
+  border-radius: 50%;
+}
+.timerButton:focus:after {
+  animation: pulse-animation 6.66s ease-out infinite;
+}
+.timerButton::before {
+  display: none;
+}
+
+.authLoading {
+  box-shadow: none;
+  background-color: var(--c-spiral);
+}
+.authLoading:focus:after {
+  animation: none;
+}
+
+.timerStarted {
+  box-shadow: 0 0 0 0.5rem currentcolor;
+  background-color: var(--c-background);
+  transform: scale(1);
+}
+.timerStarted:focus:after {
+  animation: none;
+}
+
+.pressProgress {
+  position: absolute;
+  z-index: 1;
+  border-radius: 50%;
+  background-color: var(--c-extra-gray);
+  width: 100%;
+  height: 100%;
+  transform: scale(0);
+  opacity: 0.1;
+  transition: transform 0.6s ease-out, opacity 1s ease-out;
+}
+.timerButtonPressed {
+  transform: scale(1);
+  opacity: 0.5;
+}

@@ -2,23 +2,25 @@ import React from "react"
 import ReactDOM from "react-dom"
 import reportWebVitals from "./reportWebVitals"
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration"
-import "./global.css"
 import { showAppVersion } from "shared/utils/show-app-version"
 import { onServiceWorkerUpdate } from "@3m1/service-worker-updater"
 import { AppRouter } from "app-router"
 import { BrowserRouter } from "react-router-dom"
 import { store } from "./store"
 import { Provider } from "react-redux"
+import { ErrorBoundary } from "error-boundary"
 
 const rootElement = document.getElementById("root")
 ReactDOM.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <BrowserRouter>
-        <AppRouter />
-      </BrowserRouter>
-    </Provider>
-  </React.StrictMode>,
+  <ErrorBoundary>
+    <React.StrictMode>
+      <Provider store={store}>
+        <BrowserRouter>
+          <AppRouter />
+        </BrowserRouter>
+      </Provider>
+    </React.StrictMode>
+  </ErrorBoundary>,
   rootElement
 )
 

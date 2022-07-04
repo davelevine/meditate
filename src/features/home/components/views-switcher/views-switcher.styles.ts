@@ -5,10 +5,22 @@ export const SwipeButton = styled.button`
   justify-content: center;
   align-items: center;
   background-color: transparent;
-  color: var(--c-foreground);
+  color: var(--c-extra-gray);
   transition: none;
+  transition: transform ease-out 0.1s;
   padding: 2rem;
+  margin-bottom: 3px;
   border-radius: 3rem;
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  &:focus {
+    outline-style: solid;
+    outline-color: var(--c-gray);
+    outline-width: 1px;
+  }
 
   @media screen and (hover: none) and (orientation: landscape) {
     padding: 1rem 1rem;
@@ -19,6 +31,7 @@ export const SwipeButton = styled.button`
 interface Props {
   isActive: boolean
 }
+
 export const Circle = styled.span<Props>`
   aspect-ratio: 1;
   width: 1.5rem;
